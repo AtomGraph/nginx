@@ -5,7 +5,7 @@ LABEL maintainer="martynas@atomgraph.com"
 RUN apt-get update && \
     apt-get install -y iputils-ping
 
-ENV SERVER_HOST=
+ENV UPSTREAM_SERVER=
 
 ENV TIMEOUT=10
 

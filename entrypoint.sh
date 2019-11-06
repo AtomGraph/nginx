@@ -2,27 +2,27 @@
 
 set -e
 
-if [ -n "${SERVER_HOST}" ] ; then
+if [ -n "${UPSTREAM_SERVER}" ] ; then
     if [ -z "${TIMEOUT}" ] ; then
         echo '$TIMEOUT not set'
         exit 1
     fi
 
-    echo "### Waiting for ${SERVER_HOST}..."
+    echo "### Waiting for ${UPSTREAM_SERVER}..."
 
     counter="${TIMEOUT}"
     i=1
 
-    while [ "$i" -le "$counter" ] && ! ping -c1 "${SERVER_HOST}" >/dev/null 2>&1
+    while [ "$i" -le "$counter" ] && ! ping -c1 "${UPSTREAM_SERVER}" >/dev/null 2>&1
     do
         sleep 1 ;
         i=$(( i+1 ))
     done
 
-    if ping -c1 "${SERVER_HOST}" >/dev/null 2>&1 ; then
+    if ping -c1 "${UPSTREAM_SERVER}" >/dev/null 2>&1 ; then
         exec "$@"
     else
-        echo "### ${SERVER_HOST} not responding, exiting..."
+        echo "### ${UPSTREAM_SERVER} not responding, exiting..."
         exit 1
     fi
 else
