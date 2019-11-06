@@ -20,11 +20,13 @@ if [ -n "${UPSTREAM_SERVER}" ] ; then
     done
 
     if ping -c1 "${UPSTREAM_SERVER}" >/dev/null 2>&1 ; then
+        echo "### ${UPSTREAM_SERVER} responded"
         exec "$@"
     else
         echo "### ${UPSTREAM_SERVER} not responding, exiting..."
         exit 1
     fi
 else
+    echo "### ${UPSTREAM_SERVER} not provided - waiting skipped"
     exec "$@"
 fi
