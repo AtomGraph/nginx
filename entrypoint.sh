@@ -11,8 +11,13 @@ if [ "$GENERATE_SERVER_CERT" = "true" ] && [ ! -f "$SERVER_CERT_FILE" ]; then
         exit 1
     fi
 
-    if [ ! -d "$SERVER_CERT_DIR" ]; then
-        mkdir -p "$SERVER_CERT_DIR"
+    cert_dirname=$(dirname "$SERVER_CERT_FILE")
+    if [ ! -d "$cert_dirname" ]; then
+        mkdir -p "$cert_dirname"
+    fi
+    key_dirname=$(dirname "$SERVER_KEY_FILE")
+    if [ ! -d "$key_dirname" ]; then
+        mkdir -p "$key_dirname"
     fi
 
     printf "\n### Generating server certificate\n"
@@ -27,9 +32,15 @@ if [ "$GENERATE_SERVER_CERT" = "true" ] && [ ! -f "$SERVER_CERT_FILE" ]; then
     fi
 
     openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 -nodes \
-      -keyout "$SERVER_CERT_KEY" -out "$SERVER_CERT_FILE" \
+      -keyout "$SERVER_KEY_FILE" -out "$SERVER_CERT_FILE" \
       -subj "/CN=${HOST}/OU=LinkedDataHub/O=AtomGraph/L=Copenhagen/C=DK" \
       -addext "$ext"
+
+    if [ ! -d "$SERVER_CERT_MOUNT" ]; then
+        mkdir -p "$SERVER_CERT_MOUNT"
+    fi
+
+    cp "$SERVER_CERT_FILE" "$SERVER_CERT_MOUNT"
 fi
 
 if [ -n "${UPSTREAM_SERVER}" ] ; then

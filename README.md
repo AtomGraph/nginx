@@ -5,7 +5,8 @@ nginx Docker image with `ping` installed
 
 ## Server certificate
 
-If `$GENERATE_SERVER_CERT=true`, a self-signed server certificate and private key will be generated under `$SERVER_CERT_FILE` (by default `/etc/nginx/ssl/server.crt`) and `$SERVER_CERT_KEY` (by default `/etc/nginx/ssl/server.key`), respectively. `$HOST` variable needs to be set to the hostname of the server, e.g. `localhost`.
+If `$GENERATE_SERVER_CERT=true`, a self-signed server certificate and private key will be generated under `$SERVER_CERT_FILE` (by default `/etc/nginx/ssl/server.crt`) and `$SERVER_KEY_FILE` (by default `/etc/nginx/ssl/server.key`), respectively. `$HOST` variable needs to be set to the hostname of the server, e.g. `localhost`.
+The certificate can be mounted by mounting the container's `$SERVER_CERT_MOUNT` folder (by default `/etc/nginx/ssl/public`).
 
 ## Upstream sever
 
@@ -14,8 +15,16 @@ If the host responds during that period, the entrypoint command is executed. Oth
 
 # Example
 
-    docker run \
-        -e GENERATE_SERVER_CERT=true \
-        -e HOST=localhost \
-        -e UPSTREAM_SERVER=tomcat \
-        atomgraph/nginx
+Using `docker-compose.yml`:
+
+    version: "2.3"
+    services:
+      nginx:
+        image: atomgraph/nginx
+        environment:
+          - GENERATE_SERVER_CERT=true
+          - HOST=localhost
+          - UPSTREAM_SERVER=tomcat
+        command: nginx -g 'daemon off;'
+        volumes:
+          - ./certs:/etc/nginx/ssl/public
