@@ -7,8 +7,6 @@ RUN apt-get update && \
 
 ENV GENERATE_SERVER_CERT=false
 
-ENV SERVER_CERT_MOUNT=/etc/nginx/ssl/public
-
 ENV SERVER_CERT_FILE=/etc/nginx/ssl/server.crt
 
 ENV SERVER_KEY_FILE=/etc/nginx/ssl/server.key

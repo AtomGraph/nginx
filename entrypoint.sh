@@ -2,15 +2,31 @@
 
 set -e
 
+generate_x509cert()
+{
+    local host="$1"
+    local out="$2"
+    local keyout="$3"
+
+    # crude check if the host is an IP address
+    ip_add_match=$(echo "$host" | grep -oE "\b([0-9]{1,3}\.){3}[0-9]{1,3}\b" || test $? = 1)
+
+    if [ -n "$ip_add_match" ]; then
+        ext="subjectAltName=IP:${host}" # IP address
+    else
+        ext="subjectAltName=DNS:${host}" # hostname
+    fi
+
+    openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 -nodes \
+      -out "$out" -keyout "$keyout" \
+      -subj "/CN=${host}/OU=LinkedDataHub/O=AtomGraph/L=Copenhagen/C=DK" \
+      -addext "$ext"
+}
+
 # if server's SSL certificates do not exist (e.g. not mounted), generate them
 # https://community.letsencrypt.org/t/cry-for-help-windows-tomcat-ssl-lets-encrypt/22902/4
 
-if [ "$GENERATE_SERVER_CERT" = "true" ] && [ ! -f "$SERVER_CERT_FILE" ]; then
-    if [ -z "${HOST}" ] ; then
-        echo '$HOST not set'
-        exit 1
-    fi
-
+if [ -z "$HOST" ] && [ "$GENERATE_SERVER_CERT" = "true" ] && [ ! -f "$SERVER_CERT_FILE" ]; then
     cert_dirname=$(dirname "$SERVER_CERT_FILE")
     if [ ! -d "$cert_dirname" ]; then
         mkdir -p "$cert_dirname"
@@ -21,50 +37,31 @@ if [ "$GENERATE_SERVER_CERT" = "true" ] && [ ! -f "$SERVER_CERT_FILE" ]; then
     fi
 
     printf "\n### Generating server certificate\n"
-
-    # crude check if the host is an IP address
-    IP_ADDR_MATCH=$(echo "$HOST" | grep -oE "\b([0-9]{1,3}\.){3}[0-9]{1,3}\b" || test $? = 1)
-
-    if [ -n "$IP_ADDR_MATCH" ]; then
-        ext="subjectAltName=IP:${HOST}" # IP address
-    else
-        ext="subjectAltName=DNS:${HOST}" # hostname
-    fi
-
-    openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 -nodes \
-      -keyout "$SERVER_KEY_FILE" -out "$SERVER_CERT_FILE" \
-      -subj "/CN=${HOST}/OU=LinkedDataHub/O=AtomGraph/L=Copenhagen/C=DK" \
-      -addext "$ext"
-
-    if [ ! -d "$SERVER_CERT_MOUNT" ]; then
-        mkdir -p "$SERVER_CERT_MOUNT"
-    fi
-
-    cp "$SERVER_CERT_FILE" "$SERVER_CERT_MOUNT"
+    generate_x509cert "$HOST" "$SERVER_CERT_FILE" "$SERVER_KEY_FILE"
 fi
 
-if [ -n "${UPSTREAM_SERVER}" ] ; then
-    if [ -z "${TIMEOUT}" ] ; then
+if [ -n "$UPSTREAM_SERVER" ] ; then
+    if [ -z "$TIMEOUT" ] ; then
         echo '$TIMEOUT not set'
         exit 1
     fi
 
-    printf "\n### Waiting for %s...\n" "${UPSTREAM_SERVER}"
+    printf "\n### Waiting for %s...\n" "$UPSTREAM_SERVER"
 
-    counter="${TIMEOUT}"
+    counter="$TIMEOUT"
     i=1
 
-    while [ "$i" -le "$counter" ] && ! ping -c1 "${UPSTREAM_SERVER}" >/dev/null 2>&1
+    while [ "$i" -le "$counter" ] && ! ping -c1 "$UPSTREAM_SERVER" >/dev/null 2>&1
     do
         sleep 1 ;
         i=$(( i+1 ))
     done
 
-    if ping -c1 "${UPSTREAM_SERVER}" >/dev/null 2>&1 ; then
-        printf "\n### %s responded\n" "${UPSTREAM_SERVER}"
+    if ping -c1 "$UPSTREAM_SERVER" >/dev/null 2>&1 ; then
+        printf "\n### %s responded\n" "$UPSTREAM_SERVER"
         exec "$@"
     else
-        printf "\n### %s not responding, exiting...\n" "${UPSTREAM_SERVER}"
+        printf "\n### %s not responding, exiting...\n" "$UPSTREAM_SERVER"
         exit 1
     fi
 else
