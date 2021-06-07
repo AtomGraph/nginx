@@ -5,11 +5,7 @@ nginx Docker image with `ping` installed
 
 ## Server certificate
 
-If `$GENERATE_SERVER_CERT=true`, a self-signed server certificate and private key will be generated under `$SERVER_CERT_FILE` (by default `/etc/nginx/ssl/server.crt`) and `$SERVER_KEY_FILE` (by default `/etc/nginx/ssl/server.key`), respectively.
-
-`$HOST` variable needs to be set to the hostname of the server, e.g. `localhost`.
-
-The certificate can be mounted by mounting the container's `$SERVER_CERT_MOUNT` folder (by default `/etc/nginx/ssl/public`).
+If `$GENERATE_SERVER_CERT=true` and `$HOST` is set (to the hostname of the server, e.g. `localhost`), a self-signed server certificate and private key will be generated under `$SERVER_CERT_FILE` (by default `/etc/nginx/ssl/server.crt`) and `$SERVER_KEY_FILE` (by default `/etc/nginx/ssl/server.key`), respectively.
 
 ## Upstream sever
 
@@ -31,4 +27,4 @@ Using `docker-compose.yml`:
           - UPSTREAM_SERVER=tomcat
         command: nginx -g 'daemon off;'
         volumes:
-          - ./certs:/etc/nginx/ssl/public
+          - ./certs:/etc/nginx/ssl
