@@ -2,27 +2,6 @@
 
 set -e
 
-generate_x509cert()
-{
-    local host="$1"
-    local out="$2"
-    local keyout="$3"
-
-    # crude check if the host is an IP address
-    ip_add_match=$(echo "$host" | grep -oE "\b([0-9]{1,3}\.){3}[0-9]{1,3}\b" || test $? = 1)
-
-    if [ -n "$ip_add_match" ]; then
-        ext="subjectAltName=IP:${host}" # IP address
-    else
-        ext="subjectAltName=DNS:${host}" # hostname
-    fi
-
-    openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 -nodes \
-      -out "$out" -keyout "$keyout" \
-      -subj "/CN=${host}/OU=LinkedDataHub/O=AtomGraph/L=Copenhagen/C=DK" \
-      -addext "$ext"
-}
-
 # if server's SSL certificates do not exist (e.g. not mounted), generate them
 # https://community.letsencrypt.org/t/cry-for-help-windows-tomcat-ssl-lets-encrypt/22902/4
 
@@ -37,7 +16,7 @@ if [ -n "$HOST" ] && [ "$GENERATE_SERVER_CERT" = "true" ] && [ ! -f "$SERVER_CER
     fi
 
     printf "\n### Generating server certificate\n"
-    generate_x509cert "$HOST" "$SERVER_CERT_FILE" "$SERVER_KEY_FILE"
+    ./generate-x509cert.sh "$HOST" "$SERVER_CERT_FILE" "$SERVER_KEY_FILE"
 fi
 
 if [ -n "$UPSTREAM_SERVER" ] ; then
