@@ -26,7 +26,7 @@ generate_x509cert()
 # if server's SSL certificates do not exist (e.g. not mounted), generate them
 # https://community.letsencrypt.org/t/cry-for-help-windows-tomcat-ssl-lets-encrypt/22902/4
 
-if [ -n "$HOST" ] && [ "$GENERATE_SERVER_CERT" = "true" ] && [ ! -f "$SERVER_CERT_FILE" ]; then
+if [ -n "$SERVER_NAME" ] && [ "$GENERATE_SERVER_CERT" = "true" ] && [ ! -f "$SERVER_CERT_FILE" ]; then
     cert_dirname=$(dirname "$SERVER_CERT_FILE")
     if [ ! -d "$cert_dirname" ]; then
         mkdir -p "$cert_dirname"
@@ -37,7 +37,7 @@ if [ -n "$HOST" ] && [ "$GENERATE_SERVER_CERT" = "true" ] && [ ! -f "$SERVER_CER
     fi
 
     printf "\n### Generating server certificate\n"
-    generate_x509cert "$HOST" "$SERVER_CERT_FILE" "$SERVER_KEY_FILE"
+    generate_x509cert "$SERVER_NAME" "$SERVER_CERT_FILE" "$SERVER_KEY_FILE"
 fi
 
 if [ -n "$UPSTREAM_SERVER" ] ; then

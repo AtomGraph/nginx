@@ -23,7 +23,7 @@ Using `docker-compose.yml`:
         image: atomgraph/nginx
         environment:
           - GENERATE_SERVER_CERT=true
-          - HOST=localhost
+          - SERVER_NAME=localhost
           - UPSTREAM_SERVER=tomcat
         command: nginx -g 'daemon off;'
         volumes:
