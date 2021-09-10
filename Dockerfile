@@ -17,6 +17,10 @@ ENV TIMEOUT=10
 
 COPY ./entrypoint.sh /usr/local/bin/entrypoint.sh
 
-RUN ["chmod", "+x", "/usr/local/bin/entrypoint.sh"]
+COPY ./generate-x509cert.sh /usr/local/bin/generate-x509cert.sh
 
-ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+RUN ["chmod", "+x", "/usr/local/bin/entrypoint.sh", "/usr/local/bin/generate-x509cert.sh" ]
+
+WORKDIR /usr/local/bin/
+
+ENTRYPOINT ["entrypoint.sh"]
