@@ -1,6 +1,8 @@
-FROM nginx
+FROM nginxinc/nginx-unprivileged
 
 LABEL maintainer="martynas@atomgraph.com"
+
+USER root
 
 RUN apt-get update && \
     apt-get install -y iputils-ping
@@ -22,5 +24,7 @@ COPY ./generate-x509cert.sh /usr/local/bin/generate-x509cert.sh
 RUN ["chmod", "+x", "/usr/local/bin/entrypoint.sh", "/usr/local/bin/generate-x509cert.sh" ]
 
 WORKDIR /usr/local/bin/
+
+USER $UID
 
 ENTRYPOINT ["entrypoint.sh"]
