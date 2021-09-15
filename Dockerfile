@@ -21,10 +21,15 @@ COPY ./entrypoint.sh /usr/local/bin/entrypoint.sh
 
 COPY ./generate-x509cert.sh /usr/local/bin/generate-x509cert.sh
 
+RUN mkdir "$(dirname "$SERVER_CERT_FILE")" && \
+    mkdir "$(dirname "$SERVER_KEY_FILE")" && \
+    setfacl -Rm user:101:rwx "$(dirname "$SERVER_CERT_FILE")" && \
+    setfacl -Rm user:101:rwx "$(dirname "$SERVER_KEY_FILE")" && \
+
 RUN ["chmod", "+x", "/usr/local/bin/entrypoint.sh", "/usr/local/bin/generate-x509cert.sh" ]
 
 WORKDIR /usr/local/bin/
 
-USER $UID
+USER 101 # set in the base image
 
 ENTRYPOINT ["entrypoint.sh"]
