@@ -31,6 +31,7 @@ RUN ["chmod", "+x", "/usr/local/bin/entrypoint.sh", "/usr/local/bin/generate-x50
 
 WORKDIR /usr/local/bin/
 
-USER 101 # set in the base image
+# UID set in the base image
+USER 101
 
 ENTRYPOINT ["entrypoint.sh"]
