@@ -21,7 +21,10 @@ COPY ./entrypoint.sh /usr/local/bin/entrypoint.sh
 
 COPY ./generate-x509cert.sh /usr/local/bin/generate-x509cert.sh
 
-RUN mkdir /etc/nginx/ssl && \
+RUN apt-get update --allow-releaseinfo-change && \
+    apt-get install -y acl && \
+    rm -rf /var/lib/apt/lists/* && \
+    mkdir /etc/nginx/ssl && \
     setfacl -Rm user:101:rwx /etc/nginx/ssl
 
 RUN ["chmod", "+x", "/usr/local/bin/entrypoint.sh", "/usr/local/bin/generate-x509cert.sh" ]
