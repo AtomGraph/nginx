@@ -25,13 +25,12 @@ RUN apt-get update --allow-releaseinfo-change && \
     apt-get install -y acl && \
     rm -rf /var/lib/apt/lists/* && \
     mkdir /etc/nginx/ssl && \
-    setfacl -Rm user:101:rwx /etc/nginx/ssl
+    setfacl -Rm user:nginx:rwx /etc/nginx/ssl
 
 RUN ["chmod", "+x", "/usr/local/bin/entrypoint.sh", "/usr/local/bin/generate-x509cert.sh" ]
 
 WORKDIR /usr/local/bin/
 
-# UID set in the base image
-USER 101
+USER nginx
 
 ENTRYPOINT ["entrypoint.sh"]
