@@ -1,4 +1,4 @@
-FROM nginx
+FROM nginx:1.23.3
 
 LABEL maintainer="martynas@atomgraph.com"
 
