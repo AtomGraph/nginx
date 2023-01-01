@@ -1,4 +1,4 @@
-FROM nginxinc/nginx-unprivileged
+FROM nginxinc/nginx-unprivileged:1.23
 
 LABEL maintainer="martynas@atomgraph.com"
 
