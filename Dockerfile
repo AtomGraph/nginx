@@ -21,7 +21,8 @@ COPY ./entrypoint.sh /usr/local/bin/entrypoint.sh
 
 COPY ./generate-x509cert.sh /usr/local/bin/generate-x509cert.sh
 
-RUN ["chmod", "+x", "/usr/local/bin/entrypoint.sh", "/usr/local/bin/generate-x509cert.sh" ]
+RUN chmod +x /usr/local/bin/entrypoint.sh /usr/local/bin/generate-x509cert.sh && \
+    chown -R nginx /etc/nginx
 
 WORKDIR /usr/local/bin/
 
