@@ -1,5 +1,5 @@
 # nginx
-nginx Docker image with `ping` installed
+nginx Docker image that can generate a self-signed server certificate.
 
 # Usage
 
